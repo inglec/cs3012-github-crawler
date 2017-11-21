@@ -1,25 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>inglec GitHub App</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<title>GitHub Insight</title>
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+		<link rel="stylesheet" href="css/starter-template.css">
 	</head>
 	<body>
-		<p>GitHub App</p>
+		<nav id="navbar" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" style="display: none">
+			<a class="navbar-brand" href="#">GitHub Insight</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+				<ul class="nav navbar-nav mr-auto">
+					<li class="nav-item">
+						<a class="nav-link" onclick="getUser()">My User Info</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" onclick="getRepos()">My Repositories</a>
+					</li>
+				</ul>
+				<ul class="nav navbar-nav ml-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="https://github.com/inglec/github-crawler/">Source</a>
+					</li>
+					<li class="nav-item">
+						<button type="button" class="btn btn-outline-danger" onclick="signOut()">Sign Out</button>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<main role="main" class="container">
+			<div id="welcome">
+				<h1>Welcome to GitHub Insight</h1>
+				<p>Please <a href="#" onclick="signIn()">sign in</a> to begin</p>
+			</div>
+			<h1 id="welcome-user" style="display: none">No User Data</h1>
+			<div id="results-div">
+
+			</div>
+		</main>
+
+		<!-- JavaScript -->
+
+		<!-- jQuery, Popper.js, Bootstrap JS -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+		<script src="js/main.js"></script>
+
+		<!-- Firebase -->
+		<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+		<script>
+			var config = {
+				apiKey: "AIzaSyBJ0IEYvX1_1KeEbrpy9edfK7y9rvCTfNE",
+				authDomain: "inglec-github.firebaseapp.com",
+				databaseURL: "https://inglec-github.firebaseio.com",
+				projectId: "inglec-github",
+				storageBucket: "inglec-github.appspot.com",
+				messagingSenderId: "249323289846"
+			};
+			firebase.initializeApp(config);
+		</script>
 	</body>
-	<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
-	<script>
-		// Initialize Firebase
-		var config = {
-			apiKey: "AIzaSyBJ0IEYvX1_1KeEbrpy9edfK7y9rvCTfNE",
-			authDomain: "inglec-github.firebaseapp.com",
-			databaseURL: "https://inglec-github.firebaseio.com",
-			projectId: "inglec-github",
-			storageBucket: "inglec-github.appspot.com",
-			messagingSenderId: "249323289846"
-		};
-		firebase.initializeApp(config);
-	</script>
-	<script src="js/main.js"></script>
 </html>
