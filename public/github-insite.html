@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<title>GitHub Insite</title>
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	</head>
+	<body>
+		<div class="container">
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">GitHub Insite</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#" onclick="getUser()">My Stats</a></li>
+              <li><a href="#" onclick="getRepos()">My Repositories</a></li>
+            </ul>
+            <button type="button" class="navbar-btn btn-danger navbar-right" onclick="signOut()">Sign Out</button>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div id="results" class="jumbotron">
+		<div>
+        	<h1 id="welcome-user">No user data</img></h1>
+
+		</div
+        <p>Use the tabs above to display various analytics about your GitHub account.</p>
+      </div>
+    </div> <!-- /container -->
+	<!-- jQuery & Bootstrap Javascript -->
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<!-- My JavaScript -->
+	<script src="js/github-insite.js"></script>
+	<script src="js/login.js"></script>
+
+	<!-- Firebase -->
+	<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+	<script>
+		var config = {
+			apiKey: "AIzaSyBJ0IEYvX1_1KeEbrpy9edfK7y9rvCTfNE",
+			authDomain: "inglec-github.firebaseapp.com",
+			databaseURL: "https://inglec-github.firebaseio.com",
+			projectId: "inglec-github",
+			storageBucket: "inglec-github.appspot.com",
+			messagingSenderId: "249323289846"
+		};
+		firebase.initializeApp(config);
+	</script>
+	</body>
+</html>

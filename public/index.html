@@ -4,49 +4,48 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-		<title>GitHub Insight</title>
+		<title>Login to GitHub Insite</title>
 
 		<!-- Bootstrap CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-		<link rel="stylesheet" href="css/starter-template.css">
+		<link href="css/narrow-jumbotron.css" rel="stylesheet">
 	</head>
 	<body>
-		<nav id="navbar" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" style="display: none">
-			<a class="navbar-brand" href="#">GitHub Insight</a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
+		<div class="container">
+		  <div class="header clearfix">
+			<nav>
+			  <ul class="nav nav-pills float-right">
+				<li class="nav-item">
+				  <a class="nav-link" href="https://github.com/inglec/github-crawler/">Source on GitHub</a>
+				</li>
+			  </ul>
+			</nav>
+			<h3 class="text-muted">GitHub Insite</h3>
+		  </div>
 
-			<div class="collapse navbar-collapse" id="navbarsExampleDefault">
-				<ul class="nav navbar-nav mr-auto">
-					<li class="nav-item">
-						<a class="nav-link" onclick="getUser()">My User Info</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" onclick="getRepos()">My Repositories</a>
-					</li>
-				</ul>
-				<ul class="nav navbar-nav ml-auto">
-					<li class="nav-item">
-						<a class="nav-link" href="https://github.com/inglec/github-crawler/">Source</a>
-					</li>
-					<li class="nav-item">
-						<button type="button" class="btn btn-outline-danger" onclick="signOut()">Sign Out</button>
-					</li>
-				</ul>
-			</div>
-		</nav>
+		  <div class="jumbotron">
+			<h1 class="display-4">Sign in to GitHub Insite</h1>
+			<p class="lead">Welcome to GitHub Insite. Please sign in using your GitHub credentials so that we can get to work.</p>
+			<p><a class="btn btn-lg btn-success" href="#" role="button" onclick="signIn()">Sign In</a></p>
+		  </div>
 
-		<main role="main" class="container">
-			<div id="welcome">
-				<h1>Welcome to GitHub Insight</h1>
-				<p>Please <a href="#" onclick="signIn()">sign in</a> to begin</p>
+		  <div class="row marketing">
+			<div class="col-lg-6">
+			  <h4>CS3012</h4>
+			  <p>This project was developed by Ciarán Ingle for CS3012 Software Engineering.</p>
 			</div>
-			<h1 id="welcome-user" style="display: none">No User Data</h1>
-			<div id="results-div">
+			<div class="col-lg-6">
+			  <h4>GitHub</h4>
+			  <p>Click the link at the top of the page to view the source code on GitHub.</p>
+			</div>
+		  </div>
 
-			</div>
-		</main>
+		  <footer class="footer">
+			<p>&copy; Ciarán Ingle 2017</p>
+		  </footer>
+
+		</div> <!-- /container -->
+
 
 		<!-- JavaScript -->
 
@@ -54,7 +53,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-		<script src="js/main.js"></script>
+		<script src="js/login.js"></script>
 
 		<!-- Firebase -->
 		<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
