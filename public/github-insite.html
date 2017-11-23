@@ -7,63 +7,71 @@
 		<title>GitHub Insite</title>
 
 		<!-- Bootstrap CSS -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+		<!-- iconic -->
+		<link rel="stylesheet" href="/open-iconic/font/css/open-iconic-bootstrap.css">
 	</head>
 	<body>
 		<div class="container">
+			<nav class="navbar navbar-expand-lg navbar-light bg-light">
+				<a class="navbar-brand" href="#" onclick="showHome()">GitHub Insite</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
 
-      <!-- Static navbar -->
-      <nav class="navbar navbar-default">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">GitHub Insite</a>
-          </div>
-          <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#" onclick="getUser()">My Stats</a></li>
-              <li><a href="#" onclick="getRepos()">My Repositories</a></li>
-            </ul>
-            <button type="button" class="navbar-btn btn-danger navbar-right" onclick="signOut()">Sign Out</button>
-          </div><!--/.nav-collapse -->
-        </div><!--/.container-fluid -->
-      </nav>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav mr-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="#" onclick="showUserData()"><span class="oi oi-bar-chart"></span> My Stats<span class="sr-only">(current)</span></a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#" onclick="showRepos()"><span class="oi oi-book"></span> My Repos<span class="sr-only">(current)</span></a>
+						</li>
+					</ul>
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item dropdown">
+							<a id="dropdown" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								No user name
+							</a>
+							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+								<a id="user-github-link" class="dropdown-item" href="#"><span class="oi oi-browser"></span> My GitHub</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="#" onclick="signOut()"><span class="oi oi-account-logout"></span> Sign Out</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
 
-      <!-- Main component for a primary marketing message or call to action -->
-      <div id="results" class="jumbotron">
-		<div>
-        	<h1 id="welcome-user">No user data</img></h1>
+			</br>
 
-		</div
-        <p>Use the tabs above to display various analytics about your GitHub account.</p>
-      </div>
-    </div> <!-- /container -->
-	<!-- jQuery & Bootstrap Javascript -->
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+			<!-- Main component for a primary marketing message or call to action -->
+			<div id="results" class="jumbotron">
+				ERROR
+			</div>
+	    </div> <!-- /container -->
+		<!-- jQuery & Bootstrap Javascript -->
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 
-	<!-- My JavaScript -->
-	<script src="js/github-insite.js"></script>
-	<script src="js/login.js"></script>
+		<!-- My JavaScript -->
+		<script src="js/github-insite.js"></script>
+		<script src="js/login.js"></script>
 
-	<!-- Firebase -->
-	<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
-	<script>
-		var config = {
-			apiKey: "AIzaSyBJ0IEYvX1_1KeEbrpy9edfK7y9rvCTfNE",
-			authDomain: "inglec-github.firebaseapp.com",
-			databaseURL: "https://inglec-github.firebaseio.com",
-			projectId: "inglec-github",
-			storageBucket: "inglec-github.appspot.com",
-			messagingSenderId: "249323289846"
-		};
-		firebase.initializeApp(config);
-	</script>
+		<!-- Firebase -->
+		<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+		<script>
+			var config = {
+				apiKey: "AIzaSyBJ0IEYvX1_1KeEbrpy9edfK7y9rvCTfNE",
+				authDomain: "inglec-github.firebaseapp.com",
+				databaseURL: "https://inglec-github.firebaseio.com",
+				projectId: "inglec-github",
+				storageBucket: "inglec-github.appspot.com",
+				messagingSenderId: "249323289846"
+			};
+			firebase.initializeApp(config);
+		</script>
 	</body>
 </html>
