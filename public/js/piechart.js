@@ -1,3 +1,5 @@
+// Modified version of http://bl.ocks.org/dbuezas/9306799
+
 var scale = 0.5;	// Scale pie chart to fit labels within SVG element
 
 var svg, width, height;
@@ -9,9 +11,9 @@ function drawCommitsPieChart(data) {
     width  = parseInt(svg.style("width"), 10);
     height = parseInt(svg.style("height"), 10);
 
-    pieWidth = width * scale;
+    pieWidth  = width * scale;
     pieHeight = height * scale;
-    radius = pieWidth/2;
+    radius    = pieWidth/2;
 
     svg = svg.append("g");
     svg.append("g")
@@ -71,7 +73,6 @@ function change(data) {
     .remove();
 
   /* ------- TEXT LABELS -------*/
-
   var text = svg.select(".labels").selectAll("text")
   .data(pie(data));
 
@@ -112,26 +113,27 @@ function change(data) {
     .remove();
 
   /* ------- SLICE TO TEXT POLYLINES -------*/
+  if (data[0].repo != null) {
+      var polyline = svg.select(".lines").selectAll("polyline")
+      .data(pie(data));
 
-  var polyline = svg.select(".lines").selectAll("polyline")
-  .data(pie(data));
+      polyline.enter()
+        .append("polyline");
 
-  polyline.enter()
-    .append("polyline");
+      polyline.transition().duration(1000)
+        .attrTween("points", function(d){
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          var d2 = interpolate(t);
+          var pos = outerArc.centroid(d2);
+          pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+          return [arc.centroid(d2), outerArc.centroid(d2), pos];
+        };
+      });
 
-  polyline.transition().duration(1000)
-    .attrTween("points", function(d){
-    this._current = this._current || d;
-    var interpolate = d3.interpolate(this._current, d);
-    this._current = interpolate(0);
-    return function(t) {
-      var d2 = interpolate(t);
-      var pos = outerArc.centroid(d2);
-      pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
-      return [arc.centroid(d2), outerArc.centroid(d2), pos];
-    };
-  });
-
-  polyline.exit()
-    .remove();
+      polyline.exit()
+        .remove();
+    }
 };

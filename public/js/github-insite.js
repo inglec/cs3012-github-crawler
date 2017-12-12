@@ -1,31 +1,36 @@
-var username;
-var token;
-var userData;
-
-window.onload = function() {
-    username = sessionStorage.getItem('username');
-    token = sessionStorage.getItem('token');
-
-    showHome();
-    $('#dropdown').text(username);
-
-    userData = getUserData();
+// Object to represent the logged in user.
+var user = {
+    username: sessionStorage.getItem('username'),
+    userdata: null,
+    repos: null,
+    contributors: []
 }
 
-function getUserData() {
+var maxDepth = 3; // max depth for collaborator search
+var maxContributors = 10;
+
+window.onload = function() {
+    showHome();
+    getMyUserData();
+
+    $('#dropdown').text(user.username);
+}
+
+function getMyUserData() {
+    console.log("Getting user data...");
     $.ajax({
-        url: "https://api.github.com/users/" + username,
+        url: "https://api.github.com/users/" + user.username,
         method: "GET",
         data: {
-            "access_token": token
+            "access_token": sessionStorage.getItem('token')
         },
         success: function(data, textStatus, jqXHR) {
-            console.log("Successfully fetched user data:");
-            console.log(data);
+            console.log("Successfully fetched user data.");
 
             $('#user-github-link').attr("href", data.html_url);
 
-            userData = data;
+            user.userdata = data;
+            getMyRepos();
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -33,46 +38,19 @@ function getUserData() {
     });
 }
 
-function showRepos() {
+function getMyRepos() {
+    console.log("Getting repos...");
     $.ajax({
         url: "https://api.github.com/user/repos",
         method: "GET",
         data: {
-            "access_token": token
+            "access_token": sessionStorage.getItem('token')
         },
         success: function(data, textStatus, jqXHR) {
-            console.log("Successfully fetched user repos:");
-            console.log(data);
+            console.log("Successfully fetched user repos.");
 
-            var html =  '<h1>My Repositories</h1>';
-            html +=     '<table class="table table-striped">';
-            for (var i in data) {
-                html += '<tr>';
-                html += '<td><a href="' + data[i].html_url + '">' + data[i].name + '</a>';
-                if (data[i].owner.login !== username)
-                    html += ' <span class="badge badge-pill badge-secondary">' + data[i].owner.login + '</span>';
-                if (data[i].private)
-                    html += ' <span class="badge badge-pill badge-info">Private</span>';
-                html += '</td>';
-                html += '</tr>';
-            }
-            html += '</table>';
-
-            html += '<p>Repository size (number of commits):</p>'
-            html += '<svg width="960" height="500"></svg>';
-
-            $("#results").html(html);
-
-            drawCommitsPieChart([{repo: "Repo commits", commits: 1}]);
-
-            var reposCommits = [];
-            for (var i in data) {
-                reposCommits.push({
-                    "repo": data[i].name,
-                    "commits": 0
-                });
-                setCommitCount(reposCommits, data[i].url, reposCommits[i], i == data.length-1); // update number of commits
-            }
+            user.repos = data;
+            getMyContributors();
         },
         error: function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.status === 401) {
@@ -85,12 +63,49 @@ function showRepos() {
     });
 }
 
+function getMyContributors() {
+    console.log("Getting contributors...");
+
+    getContributors(user, 0);   // Begin crawl for contributors.
+}
+
+function showMyRepos() {
+    var html =  '<h1>My Repositories</h1>';
+    html +=     '<table class="table table-striped">';
+    for (var i in user.repos) {
+        html += '<tr>';
+        html += '<td><a href="' + user.repos[i].html_url + '">' + user.repos[i].name + '</a>';
+        if (user.repos[i].owner.login !== user.username)
+            html += ' <span class="badge badge-pill badge-secondary">' + user.repos[i].owner.login + '</span>';
+        if (user.repos[i].private)
+            html += ' <span class="badge badge-pill badge-info">Private</span>';
+        html += '</td>';
+        html += '</tr>';
+    }
+    html += '</table>';
+
+    var windowWidth = $("#results").width();
+    html += '<h3>My most commited to repositories:</h3>'
+    html += '<svg width="' + windowWidth + '" height="' + 3*(windowWidth/5) + '"></svg>';
+
+    $("#results").html(html);
+
+    drawCommitsPieChart([{repo: null, commits: 1}]);  // Create default pie chart while waiting for data.
+
+    // Get number of commits to each repo.
+    var reposCommits = [];
+    for (var i in user.repos) {
+        reposCommits.push({"repo": user.repos[i].name, "commits": 0});
+        setCommitCount(reposCommits, user.repos[i].url, reposCommits[i], i == user.repos.length-1); // update number of commits
+    }
+}
+
 function setCommitCount(reposCommits, url, object, isLastCallback) {
     $.ajax({
         url: url + '/commits',
         method: "GET",
         data: {
-            "access_token": token
+            "access_token": sessionStorage.getItem('token')
         },
         success: function(data, textStatus, jqXHR) {
             object.commits = data.length;
@@ -109,16 +124,16 @@ function setCommitCount(reposCommits, url, object, isLastCallback) {
     });
 }
 
-function showUserData() {
+function showMyUserData() {
     var html =  '<div class="media">';
-    html +=         '<img class="mr-3" src="' + userData.avatar_url + '" alt="user image" width=50 height=50>';
+    html +=         '<img class="mr-3" src="' + user.userdata.avatar_url + '" alt="user image" width=50 height=50>';
     html +=         '<div class="media-body">';
-    html +=             '<h1 class="mt-0">' + username + '</h1>';
+    html +=             '<h1 class="mt-0">' + sessionStorage.getItem('username') + '</h1>';
     html +=         '</div>';
     html +=     '</div>';
 
     html += '<table class="table table-striped">';
-    $.each(userData, function(key, value){
+    $.each(user.userdata, function(key, value){
         html += '<tr>';
         html += '<td>' + key + '</td>';
         html += '<td>' + value + '</td>';
@@ -129,9 +144,130 @@ function showUserData() {
     $("#results").html(html);
 }
 
+function showMyContributors() {
+    var windowWidth = $("#results").width();
+    var html = '<h1>My contributors:</h1>'
+    html += '<svg width="' + windowWidth + '" height="' + 3*(windowWidth/5) + '"></svg>';
+
+    $("#results").html(html);
+
+    var json = {
+        nodes: [{name: user.username, group: 1}],
+        links: []
+    };
+
+    for (var i in user.contributors)
+        addContributorsToJSON(json, 0, user.contributors[i]);
+
+    console.log(json);
+
+    drawContributorGraph(json);
+}
+
+function addContributorsToJSON(json, prevIndex, u) {
+    json.nodes.push({name: u.username, group: 1});
+
+    var index = json.nodes.length-1;
+    json.links.push({source: prevIndex, target: index, value: 1});
+
+    for (var i in u.contributors)
+        addContributorsToJSON(json, index, u.contributors[i]);
+}
+
 function showHome() {
-    var html = '<h1 id="welcome-user" class="display-3">Welcome, ' + username + '!</img></h1>';
+    var html = '<h1 id="welcome-user" class="display-3">Welcome, ' + sessionStorage.getItem('username') + '!</img></h1>';
     html += '<p class="lead">Use the tabs above to display various analytics about your GitHub account.</p>';
 
     $('#results').html(html);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function getReposAndContributors(u, depth) {
+    if (depth < maxDepth) {
+        // Get repos
+        console.log("Getting repos for " + u.username + "...");
+        $.ajax({
+            url: "https://api.github.com/users/" + u.username + "/repos",
+            method: "GET",
+            data: {
+                "access_token": sessionStorage.getItem('token')
+            },
+            success: function(data, textStatus, jqXHR) {
+                console.log("Successfully fetched repos.")
+                u.repos = data;
+
+                getContributors(u, depth);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                 console.log(errorThrown);
+            }
+        });
+    }
+}
+
+function getContributors(u, depth) {
+    if (depth < maxDepth) {
+        // Add each collaborator from each repo to user object.
+        console.log("Getting contributors for user " + u.username + "...");
+        for (var i in u.repos && i < maxContributors) {
+            // Get contributors for repo.
+            console.log("Getting contributors for repository " + u.repos[i].name);
+            $.ajax({
+                url: u.repos[i].contributors_url,
+                method: "GET",
+                data: {
+                    "access_token": sessionStorage.getItem('token')
+                },
+                success: function(data, textStatus, jqXHR) {
+                    console.log("Successfully fetched contributors.")
+                    // Ignore repos with no other contributors.
+                    if (data != null && data.length > 1)
+                        for (var j in data)
+                            if (data[j].login != u.username && isNewCollaborator(data[j].login, u.contributors)) {
+                                // Add new user object as collaborator of current user and get their repos.
+                                var newUser = {
+                                    username: data[j].login,
+                                    repos: null,
+                                    contributors: []
+                                };
+                                u.contributors.push(newUser);
+
+                                getReposAndContributors(newUser, depth+1);
+                            }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                     console.log(errorThrown);
+                }
+            });
+        }
+    }
+}
+
+function isNewCollaborator(username, contributors) {
+    for (var i in contributors) {
+        if (username === contributors[i].username)
+            return false;
+    }
+    return true;
 }
