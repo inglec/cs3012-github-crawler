@@ -44,15 +44,35 @@ function showRepos() {
             console.log("Successfully fetched user repos:");
             console.log(data);
 
-            var html = '<table class="table">';
+            var html =  '<h1>My Repositories</h1>';
+            html +=     '<table class="table table-striped">';
             for (var i in data) {
                 html += '<tr>';
-                html += '<td><a href=' + data[i].html_url + '>' + data[i].name + '</a></td>';
+                html += '<td><a href="' + data[i].html_url + '">' + data[i].name + '</a>';
+                if (data[i].owner.login !== username)
+                    html += ' <span class="badge badge-pill badge-secondary">' + data[i].owner.login + '</span>';
+                if (data[i].private)
+                    html += ' <span class="badge badge-pill badge-info">Private</span>';
+                html += '</td>';
                 html += '</tr>';
             }
-            html += '</table>'
+            html += '</table>';
+
+            html += '<p>Repository size (number of commits):</p>'
+            html += '<svg width="960" height="500"></svg>';
 
             $("#results").html(html);
+
+            drawCommitsPieChart([{repo: "Repo commits", commits: 1}]);
+
+            var reposCommits = [];
+            for (var i in data) {
+                reposCommits.push({
+                    "repo": data[i].name,
+                    "commits": 0
+                });
+                setCommitCount(reposCommits, data[i].url, reposCommits[i], i == data.length-1); // update number of commits
+            }
         },
         error: function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.status === 401) {
@@ -60,16 +80,44 @@ function showRepos() {
                 sessionStorage.clear();
                 location.href = "index.html";
             }
-            else {
-                console.log(errorThrown);
+            else console.log(errorThrown);
+        }
+    });
+}
+
+function setCommitCount(reposCommits, url, object, isLastCallback) {
+    $.ajax({
+        url: url + '/commits',
+        method: "GET",
+        data: {
+            "access_token": token
+        },
+        success: function(data, textStatus, jqXHR) {
+            object.commits = data.length;
+
+            if (isLastCallback)
+                drawCommitsPieChart(reposCommits);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 401) {
+                alert("Unauthorized!\nPlease sign in!");
+                sessionStorage.clear();
+                location.href = "index.html";
             }
+            else console.log(errorThrown);
         }
     });
 }
 
 function showUserData() {
-    var html = '<h1><img src=' + userData.avatar_url + ' style="width:60px; height:60px"></img> '+ username + '</h1>';
-    html += '<table class="table">';
+    var html =  '<div class="media">';
+    html +=         '<img class="mr-3" src="' + userData.avatar_url + '" alt="user image" width=50 height=50>';
+    html +=         '<div class="media-body">';
+    html +=             '<h1 class="mt-0">' + username + '</h1>';
+    html +=         '</div>';
+    html +=     '</div>';
+
+    html += '<table class="table table-striped">';
     $.each(userData, function(key, value){
         html += '<tr>';
         html += '<td>' + key + '</td>';

@@ -10,7 +10,10 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 
 		<!-- iconic -->
-		<link rel="stylesheet" href="/open-iconic/font/css/open-iconic-bootstrap.css">
+		<link rel="stylesheet" href="open-iconic/font/css/open-iconic-bootstrap.css">
+
+		<!-- My CSS -->
+		<link rel="stylesheet" href="css/pie-chart.css">
 	</head>
 	<body>
 		<div class="container">
@@ -37,7 +40,7 @@
 							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 								<a id="user-github-link" class="dropdown-item" href="#"><span class="oi oi-browser"></span> My GitHub</a>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="#" onclick="signOut()"><span class="oi oi-account-logout"></span> Sign Out</a>
+								<a class="dropdown-item text-danger" href="#" onclick="signOut()"><span class="oi oi-account-logout"></span> Sign Out</a>
 							</div>
 						</li>
 					</ul>
@@ -48,7 +51,7 @@
 
 			<!-- Main component for a primary marketing message or call to action -->
 			<div id="results" class="jumbotron">
-				ERROR
+				No data
 			</div>
 	    </div> <!-- /container -->
 		<!-- jQuery & Bootstrap Javascript -->
@@ -56,9 +59,13 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 
+		<!-- D3js -->
+		<script src="http://d3js.org/d3.v3.min.js"></script>
+
 		<!-- My JavaScript -->
 		<script src="js/github-insite.js"></script>
 		<script src="js/login.js"></script>
+		<script src="js/visualisations.js"></script>
 
 		<!-- Firebase -->
 		<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>

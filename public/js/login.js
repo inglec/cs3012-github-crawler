@@ -3,7 +3,7 @@ function signIn() {
     var provider = new firebase.auth.GithubAuthProvider();
     provider.addScope('repo'); // Request access to user's repos
     provider.setCustomParameters({
-      'allow_signup': 'false'
+      'allow_signup': false
     });
 
     firebase.auth().signInWithPopup(provider).then(function(result) {
