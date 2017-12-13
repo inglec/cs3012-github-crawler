@@ -7,7 +7,7 @@ var user = {
 }
 
 var maxDepth = 3; // max depth for collaborator search
-var maxContributors = 10;
+var maxContributors = 3;
 
 window.onload = function() {
     showHome();
@@ -69,7 +69,7 @@ function getMyContributors() {
     getContributors(user, 0);   // Begin crawl for contributors.
 }
 
-function showMyRepos() {
+function Repos() {
     var html =  '<h1>My Repositories</h1>';
     html +=     '<table class="table table-striped">';
     for (var i in user.repos) {
@@ -124,7 +124,7 @@ function setCommitCount(reposCommits, url, object, isLastCallback) {
     });
 }
 
-function showMyUserData() {
+function UserData() {
     var html =  '<div class="media">';
     html +=         '<img class="mr-3" src="' + user.userdata.avatar_url + '" alt="user image" width=50 height=50>';
     html +=         '<div class="media-body">';
@@ -147,7 +147,7 @@ function showMyUserData() {
 function showMyContributors() {
     var windowWidth = $("#results").width();
     var html = '<h1>My contributors:</h1>'
-    html += '<svg width="' + windowWidth + '" height="' + 3*(windowWidth/5) + '"></svg>';
+    html += '<svg width="' + windowWidth + '" height="' + windowWidth + '"></svg>';
 
     $("#results").html(html);
 
@@ -165,13 +165,24 @@ function showMyContributors() {
 }
 
 function addContributorsToJSON(json, prevIndex, u) {
-    json.nodes.push({name: u.username, group: 1});
+    var index = getIndexOfNode(json, u);
+    if (index == -1) {
+        json.nodes.push({name: u.username, group: 1});
+        index = json.nodes.length-1;
+    }
 
-    var index = json.nodes.length-1;
     json.links.push({source: prevIndex, target: index, value: 1});
 
     for (var i in u.contributors)
-        addContributorsToJSON(json, index, u.contributors[i]);
+        if (u.contributors.length > 0)
+            addContributorsToJSON(json, index, u.contributors[i]);
+}
+
+function getIndexOfNode(json, u) {
+    for (var i = 0; i < json.nodes.length; i++)
+        if (json.nodes[i].name == u.username)
+            return i;
+    return -1;
 }
 
 function showHome() {
@@ -227,10 +238,12 @@ function getReposAndContributors(u, depth) {
 }
 
 function getContributors(u, depth) {
+    var contributors = 0;
+
     if (depth < maxDepth) {
         // Add each collaborator from each repo to user object.
         console.log("Getting contributors for user " + u.username + "...");
-        for (var i in u.repos && i < maxContributors) {
+        for (var i in u.repos) {
             // Get contributors for repo.
             console.log("Getting contributors for repository " + u.repos[i].name);
             $.ajax({
@@ -253,7 +266,11 @@ function getContributors(u, depth) {
                                 };
                                 u.contributors.push(newUser);
 
-                                getReposAndContributors(newUser, depth+1);
+
+                                if (contributors < maxContributors) {
+                                    getReposAndContributors(newUser, depth+1);
+                                    contributors++;
+                                }
                             }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

@@ -1,0 +1,36 @@
+[debug] [2017-12-13T10:11:18.217Z] ----------------------------------------------------------------------
+[debug] [2017-12-13T10:11:18.242Z] Command:       /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] [2017-12-13T10:11:18.244Z] CLI Version:   3.15.0
+[debug] [2017-12-13T10:11:18.245Z] Platform:      linux
+[debug] [2017-12-13T10:11:18.245Z] Node Version:  v7.8.0
+[debug] [2017-12-13T10:11:18.245Z] Time:          Wed Dec 13 2017 10:11:18 GMT+0000 (STD)
+[debug] [2017-12-13T10:11:18.245Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2017-12-13T10:11:18.471Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2017-12-13T10:11:18.472Z] > authorizing via signed-in user
+[debug] [2017-12-13T10:11:18.483Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2017-12-13T10:11:18.483Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token { refresh_token: '1/OL65WUXPrpur-vaL6KYfVxk2h3Vnc1lVvezdnOfis5U',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Wed Dec 13 2017 10:11:18 GMT+0000 (STD)
+[debug] [2017-12-13T10:11:19.404Z] <<< HTTP RESPONSE 200
+[debug] [2017-12-13T10:11:19.525Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/inglec-github  
+ Wed Dec 13 2017 10:11:19 GMT+0000 (STD)
+[debug] [2017-12-13T10:11:20.404Z] <<< HTTP RESPONSE 200
+[debug] [2017-12-13T10:11:20.406Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/inglec-github/tokens  
+ Wed Dec 13 2017 10:11:20 GMT+0000 (STD)
+[debug] [2017-12-13T10:11:21.160Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/mnt/c/Users/ciara/Documents/College/3rd Year/CS3012 Software Engineering/inglec-github'...
+[info] 
+[debug] [2017-12-13T10:11:21.167Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/inglec-github  
+ Wed Dec 13 2017 10:11:21 GMT+0000 (STD)
+[debug] [2017-12-13T10:11:21.947Z] <<< HTTP RESPONSE 200
+[debug] [2017-12-13T10:11:21.948Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/249323289846/clients/_:getWebAppConfig  
+ Wed Dec 13 2017 10:11:21 GMT+0000 (STD)
+[debug] [2017-12-13T10:11:22.468Z] <<< HTTP RESPONSE 200
+[info] i  hosting: Serving hosting files from: public
+[info] ✔  hosting: Local server: http://localhost:5000
+
