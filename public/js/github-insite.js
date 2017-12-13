@@ -7,7 +7,8 @@ var user = {
 }
 
 var nodeCount = 1;
-var maxNodes = 100;
+var maxNodes = 500;
+var updateFreq = 50; // Update graph every x additions.
 
 window.onload = function() {
     showHome();
@@ -82,7 +83,7 @@ function showMyRepos() {
 
     var windowWidth = $("#results").width();
     html += '<h3>My most commited to repositories:</h3>'
-    html += '<svg width="' + windowWidth + '" height="' + 3*(windowWidth/5) + '"></svg>';
+    html += '<svg id="pie-chart" width="' + windowWidth + '" height="' + 3*(windowWidth/5) + '"></svg>';
 
     $("#results").html(html);
 
@@ -143,34 +144,43 @@ function showMyUserData() {
 function showMyContributors() {
     var windowWidth = $("#results").width();
     var html = '<h1>My contributors:</h1>'
-    html += '<svg width="' + windowWidth + '" height="' + windowWidth + '"></svg>';
+    if (nodeCount < maxNodes) {
+        html += '<p>Progress: ' + nodeCount + '/' + maxNodes + '</p>';
+        html += '<p>Please wait for the crawl to complete.</p>';
+    }
 
+    html += '<svg id="graph" width="' + windowWidth + '" height="' + windowWidth + '"></svg>';
     $("#results").html(html);
 
     var json = {
         nodes: [{name: user.username, group: 1}],
         links: []
-    };
-
-    for (var i = 0; i < user.contributors.length; i++)
-        addContributorsToJSON(json, 0, user.contributors[i]);
-
-    // console.log(json);
+    }
+    addContributorsToJSON(json, 0, user);
 
     drawContributorGraph(json);
 }
 
-function addContributorsToJSON(json, prevIndex, u) {
-    var index = getIndexOfNode(json, u);
-    if (index == -1) {
-        json.nodes.push({name: u.username, group: 1});
-        index = json.nodes.length-1;
+function addContributorsToJSON(json, source, u) {
+    var target = getIndexOfNode(json, u);
+    if (target == -1) {
+        var node = {
+            name: u.username,
+            group: 1
+        }
+        json.nodes.push(node);
+        target = json.nodes.length-1;
     }
 
-    json.links.push({source: prevIndex, target: index, value: 1});
+    var link = {
+        source: source,
+        target: target,
+        value: 1
+    }
+    json.links.push(link);
 
     for (var i = 0; i < u.contributors.length; i++)
-        addContributorsToJSON(json, index, u.contributors[i]);
+        addContributorsToJSON(json, target, u.contributors[i]);
 }
 
 function getIndexOfNode(json, u) {
@@ -179,6 +189,8 @@ function getIndexOfNode(json, u) {
             return i;
     return -1;
 }
+
+
 
 function showHome() {
     var html = '<h1 id="welcome-user" class="display-3">Welcome, ' + sessionStorage.getItem('username') + '!</img></h1>';
@@ -267,6 +279,12 @@ function addContributorsFromRepo(u, index) {
 
                         u.contributors.push(newUser);
                         nodeCount++;
+
+                        // If graph exists on page
+                        if ($('#graph').length != 0) {
+                            if (nodeCount % updateFreq == 0)
+                                showMyContributors();
+                        }
                     }
                 }
             }
@@ -277,7 +295,6 @@ function addContributorsFromRepo(u, index) {
                 else // finished adding contributors for this user.
                     getRepos(u.contributors, 0)
             }
-            else console.log("NODE COUNT EXCEEDED!");
         },
         error: function(jqXHR, textStatus, errorThrown) {
              console.log(errorThrown);
