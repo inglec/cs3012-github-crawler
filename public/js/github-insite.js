@@ -69,7 +69,7 @@ function getMyContributors() {
     getContributors(user, 0);   // Begin crawl for contributors.
 }
 
-function Repos() {
+function showMyRepos() {
     var html =  '<h1>My Repositories</h1>';
     html +=     '<table class="table table-striped">';
     for (var i in user.repos) {
@@ -124,7 +124,7 @@ function setCommitCount(reposCommits, url, object, isLastCallback) {
     });
 }
 
-function UserData() {
+function showMyUserData() {
     var html =  '<div class="media">';
     html +=         '<img class="mr-3" src="' + user.userdata.avatar_url + '" alt="user image" width=50 height=50>';
     html +=         '<div class="media-body">';
