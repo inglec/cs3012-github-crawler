@@ -1,6 +1,8 @@
 // used https://bl.ocks.org/mbostock/950642 to help
 
 function drawContributorGraph(data) {
+    console.log(data);
+
   var svg = d3.select("svg");
   var width  = parseInt(svg.style("width"), 10);
   var height = parseInt(svg.style("height"), 10);
