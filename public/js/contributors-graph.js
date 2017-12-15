@@ -1,5 +1,7 @@
 // used https://bl.ocks.org/mbostock/950642
 
+const AVATAR_SIZE = 24;
+
 function drawContributorGraph(data) {
     var svg    = d3.select("svg");
     var width  = parseInt(svg.style("width"), 10);
@@ -28,13 +30,13 @@ function drawContributorGraph(data) {
 
     node.append("image")
         .attr("xlink:href", function(d) { return d.avatar_url })
-        .attr("x", -8)
-        .attr("y", -8)
-        .attr("width", 16)
-        .attr("height", 16);
+        .attr("x", -AVATAR_SIZE/2)
+        .attr("y", -AVATAR_SIZE/2)
+        .attr("width", AVATAR_SIZE)
+        .attr("height", AVATAR_SIZE);
 
     node.append("text")
-        .attr("dx", 12)
+        .attr("dx", AVATAR_SIZE/2)
         .attr("dy", ".35em")
         .text(function(d) { return d.name });
 

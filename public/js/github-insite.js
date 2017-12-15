@@ -14,13 +14,6 @@ window.onload = function() {
     $('#dropdown').text(user.username);
 }
 
-
-
-
-
-
-
-
 function getMyUserData() {
     console.log("Getting user data...");
     $.ajax({
@@ -52,8 +45,6 @@ function getMyRepos() {
         },
         success: function(data, textStatus, jqXHR) {
             user.repos = data;
-
-            getContributors();
         },
         error: function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.status === 401) {
@@ -66,15 +57,8 @@ function getMyRepos() {
     });
 }
 
-
-
-
-
-
-
-
 function showMyRepos() {
-    var html =  '<h1>My Repositories</h1>';
+    var html =  '<h1>My Repositories:</h1>';
     html +=     '<table class="table table-striped">';
     for (var i in user.repos) {
         html += '<tr>';
@@ -138,10 +122,16 @@ function showMyUserData() {
 
     html += '<table class="table table-striped">';
     $.each(user.userdata, function(key, value){
-        html += '<tr>';
-        html += '<td>' + key + '</td>';
-        html += '<td>' + value + '</td>';
-        html += '</tr>';
+        if (value != null && value !== "") {
+            html += '<tr>';
+            html += '<td><b>' + key + '</b></td>';
+            if (typeof value === 'string' && value.startsWith("https://"))
+                html += '<td><a href="' + value + '">Click to go to URL</a></td>';
+            else
+                html += '<td>' + value + '</td>';
+
+            html += '</tr>';
+        }
     });
     html += '</table>';
 
@@ -149,10 +139,12 @@ function showMyUserData() {
 }
 
 function showMyContributors() {
+    getContributors();
+
     var windowWidth = $("#results").width();
     var html = '<h1>My Contributors: <small class="text-muted">(Users Searched: '
         + MAX_CONTRIBUTORS + ', Limit Per User: ' + CONTRIBUTORS_PER_USER + ')</small></h1>';
-    html += '<p>The graph will update as new data is received.</p>';
+    html += '<p>Please wait. This may take a while...</p><p>The graph will update as new data is received.</p>';
     html += '<svg id="graph" width="' + windowWidth + '" height="' + windowWidth + '"></svg>';
     $("#results").html(html);
 
@@ -170,7 +162,7 @@ function showMyContributors() {
     drawContributorGraph(json);
 }
 
-const CONTRIBUTORS_PER_USER = 30; // Limit the number of connected users for each node
+const CONTRIBUTORS_PER_USER = 20; // Limit the number of connected users for each node
 
 function addContributorsToJSON(json, source, u) {
     var target = getIndexOfNode(json, u);
@@ -209,17 +201,12 @@ function showHome() {
     $('#results').html(html);
 }
 
-
-
-
-
-
 // Queues used for crawling contributors
 var noRepos        = [];     // Queue containing users with no repos fetched.
 var noContributors = [user]; // Queue containing users with no contributors fetched.
 
 var contributorsProcessed = 0;
-const MAX_CONTRIBUTORS = 20;
+const MAX_CONTRIBUTORS = 15;
 
 function getContributors() {
     while (noContributors.length > 0 && contributorsProcessed < MAX_CONTRIBUTORS) {
@@ -229,9 +216,6 @@ function getContributors() {
 
         getUserContributors(u);
     }
-
-    if (contributorsProcessed >= MAX_CONTRIBUTORS)
-        console.log("Max node count exceeded.");
 }
 
 function getRepos() {
