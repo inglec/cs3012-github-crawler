@@ -2,6 +2,7 @@
 var user = {
     username: sessionStorage.getItem('username'),
     userdata: null,
+    avatar_url: null,
     repos: null,
     contributors: []
 }
@@ -32,6 +33,7 @@ function getMyUserData() {
             $('#user-github-link').attr("href", data.html_url);
 
             user.userdata = data;
+            user.avatar_url = data.avatar_url;
             getMyRepos();
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -148,13 +150,19 @@ function showMyUserData() {
 
 function showMyContributors() {
     var windowWidth = $("#results").width();
-    var html = '<h1>My Contributors:</h1>'
+    var html = '<h1>My Contributors: <small class="text-muted">(Users Searched: '
+        + MAX_CONTRIBUTORS + ', Limit Per User: ' + CONTRIBUTORS_PER_USER + ')</small></h1>';
+    html += '<p>The graph will update as new data is received.</p>';
     html += '<svg id="graph" width="' + windowWidth + '" height="' + windowWidth + '"></svg>';
     $("#results").html(html);
 
     // Convert user object with contributor sub-objects to JSON for graphing.
     var json = {
-        nodes: [{name: user.username, group: 1}],
+        nodes: [{
+            name: user.username,
+            avatar_url: user.avatar_url,
+            group: 1
+        }],
         links: []
     }
     addContributorsToJSON(json, 0, user);
@@ -162,11 +170,14 @@ function showMyContributors() {
     drawContributorGraph(json);
 }
 
+const CONTRIBUTORS_PER_USER = 30; // Limit the number of connected users for each node
+
 function addContributorsToJSON(json, source, u) {
     var target = getIndexOfNode(json, u);
     if (target == -1) { // New user
         var node = {
             name: u.username,
+            avatar_url: u.avatar_url,
             group: 1
         }
         json.nodes.push(node);
@@ -180,7 +191,7 @@ function addContributorsToJSON(json, source, u) {
     }
     json.links.push(link);
 
-    for (var i = 0; i < u.contributors.length; i++)
+    for (var i = 0; i < u.contributors.length && i < CONTRIBUTORS_PER_USER; i++)
         addContributorsToJSON(json, target, u.contributors[i]);
 }
 
@@ -207,32 +218,36 @@ function showHome() {
 var noRepos        = [];     // Queue containing users with no repos fetched.
 var noContributors = [user]; // Queue containing users with no contributors fetched.
 
-var nodeCount = 0;
-const MAX_NODES = 10;
+var contributorsProcessed = 0;
+const MAX_CONTRIBUTORS = 20;
 
 function getContributors() {
-    while (noContributors.length > 0 && nodeCount < MAX_NODES) {
+    while (noContributors.length > 0 && contributorsProcessed < MAX_CONTRIBUTORS) {
         // Get contributors for each user in queue (repos must have been fetched prior)
         var u = noContributors.shift(); // Dequeue user
-        nodeCount++;
+        contributorsProcessed++;
 
         getUserContributors(u);
     }
 
-    if (nodeCount >= MAX_NODES)
+    if (contributorsProcessed >= MAX_CONTRIBUTORS)
         console.log("Max node count exceeded.");
 }
 
 function getRepos() {
-    while (noRepos.length > 0 && nodeCount < MAX_NODES) {
+    while (noRepos.length > 0 && contributorsProcessed < MAX_CONTRIBUTORS) {
         // Get repos for each user in queue
         var u = noRepos.shift(); // Dequeue user
         getUserRepos(u);
     }
 }
 
+var reposSearched = 0;
+var reposReceived = 0;
+
 function getUserContributors(u) {
     for (var r = 0; r < u.repos.length; r++) {
+        reposSearched++;
         var repo = u.repos[r];
         $.ajax({
             url: repo.contributors_url,
@@ -241,12 +256,15 @@ function getUserContributors(u) {
                 "access_token": sessionStorage.getItem('token')
             },
             success: function(contributors, textStatus, jqXHR) {
+                reposReceived++;
+
                 if (contributors == null)
                     return;
 
                 for (var c = 0; c < contributors.length; c++) {
                     var newUser = {
                         username: contributors[c].login,
+                        avatar_url: contributors[c].avatar_url,
                         repos: null,
                         contributors: []
                     }
@@ -254,9 +272,14 @@ function getUserContributors(u) {
                     if (newUser.username != u.username && isNewContributor(newUser.username, u.contributors)) {
                         u.contributors.push(newUser); // Add new user as contributor of current user.
 
-                        if (nodeCount < MAX_NODES)
+                        if (contributorsProcessed < MAX_CONTRIBUTORS)
                             noRepos.push(newUser); // Add to queue of users needing repo requests.
                     }
+                }
+
+                // If SVG graph is on screen, update with new data.
+                if (reposReceived == reposSearched && $('#graph').length > 0) {
+                    showMyContributors();
                 }
 
                 getRepos(); // Process queue of users without repos.
@@ -285,7 +308,7 @@ function getUserRepos(u) {
         success: function(repos, textStatus, jqXHR) {
             u.repos = repos;
 
-            if (nodeCount < MAX_NODES) {
+            if (contributorsProcessed < MAX_CONTRIBUTORS) {
                 noContributors.push(u);
                 getContributors(); // Process queue of users without contributors.
             }

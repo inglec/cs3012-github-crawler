@@ -27,7 +27,7 @@ function drawContributorGraph(data) {
         .call(force.drag);
 
     node.append("image")
-        .attr("xlink:href", "https://github.com/favicon.ico")
+        .attr("xlink:href", function(d) { return d.avatar_url })
         .attr("x", -8)
         .attr("y", -8)
         .attr("width", 16)
