@@ -10,6 +10,8 @@ This project was developed as part of the CS3012 Software Engineering module.
 
 [Firebase](https://firebase.google.com) is used to handle authentication and hosting, while [D3.js](https://d3js.org/) is used to provide visualisations for the project.
 
+## Screenshots
+
 The contributors graph:
 ![graph](/screenshots/graph.PNG)
 
