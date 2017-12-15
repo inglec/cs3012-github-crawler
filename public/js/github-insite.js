@@ -6,16 +6,19 @@ var user = {
     contributors: []
 }
 
-var nodeCount = 1;
-var maxNodes = 500;
-var updateFreq = 50; // Update graph every x additions.
-
 window.onload = function() {
     showHome();
     getMyUserData();
 
     $('#dropdown').text(user.username);
 }
+
+
+
+
+
+
+
 
 function getMyUserData() {
     console.log("Getting user data...");
@@ -47,7 +50,8 @@ function getMyRepos() {
         },
         success: function(data, textStatus, jqXHR) {
             user.repos = data;
-            getMyContributors();
+
+            getContributors();
         },
         error: function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.status === 401) {
@@ -60,11 +64,12 @@ function getMyRepos() {
     });
 }
 
-function getMyContributors() {
-    console.log("Getting contributors...");
 
-    addContributorsFromRepo(user, 0);   // Begin crawl for contributors.
-}
+
+
+
+
+
 
 function showMyRepos() {
     var html =  '<h1>My Repositories</h1>';
@@ -143,15 +148,11 @@ function showMyUserData() {
 
 function showMyContributors() {
     var windowWidth = $("#results").width();
-    var html = '<h1>My contributors:</h1>'
-    if (nodeCount < maxNodes) {
-        html += '<p>Progress: ' + nodeCount + '/' + maxNodes + '</p>';
-        html += '<p>Please wait for the crawl to complete.</p>';
-    }
-
+    var html = '<h1>My Contributors:</h1>'
     html += '<svg id="graph" width="' + windowWidth + '" height="' + windowWidth + '"></svg>';
     $("#results").html(html);
 
+    // Convert user object with contributor sub-objects to JSON for graphing.
     var json = {
         nodes: [{name: user.username, group: 1}],
         links: []
@@ -163,7 +164,7 @@ function showMyContributors() {
 
 function addContributorsToJSON(json, source, u) {
     var target = getIndexOfNode(json, u);
-    if (target == -1) {
+    if (target == -1) { // New user
         var node = {
             name: u.username,
             group: 1
@@ -190,8 +191,6 @@ function getIndexOfNode(json, u) {
     return -1;
 }
 
-
-
 function showHome() {
     var html = '<h1 id="welcome-user" class="display-3">Welcome, ' + sessionStorage.getItem('username') + '!</img></h1>';
     html += '<p class="lead">Use the tabs above to display various analytics about your GitHub account.</p>';
@@ -204,109 +203,95 @@ function showHome() {
 
 
 
+// Queues used for crawling contributors
+var noRepos        = [];     // Queue containing users with no repos fetched.
+var noContributors = [user]; // Queue containing users with no contributors fetched.
 
+var nodeCount = 0;
+const MAX_NODES = 10;
 
+function getContributors() {
+    while (noContributors.length > 0 && nodeCount < MAX_NODES) {
+        // Get contributors for each user in queue (repos must have been fetched prior)
+        var u = noContributors.shift(); // Dequeue user
+        nodeCount++;
 
+        getUserContributors(u);
+    }
 
+    if (nodeCount >= MAX_NODES)
+        console.log("Max node count exceeded.");
+}
 
+function getRepos() {
+    while (noRepos.length > 0 && nodeCount < MAX_NODES) {
+        // Get repos for each user in queue
+        var u = noRepos.shift(); // Dequeue user
+        getUserRepos(u);
+    }
+}
 
+function getUserContributors(u) {
+    for (var r = 0; r < u.repos.length; r++) {
+        var repo = u.repos[r];
+        $.ajax({
+            url: repo.contributors_url,
+            method: "GET",
+            data: {
+                "access_token": sessionStorage.getItem('token')
+            },
+            success: function(contributors, textStatus, jqXHR) {
+                if (contributors == null)
+                    return;
 
+                for (var c = 0; c < contributors.length; c++) {
+                    var newUser = {
+                        username: contributors[c].login,
+                        repos: null,
+                        contributors: []
+                    }
 
+                    if (newUser.username != u.username && isNewContributor(newUser.username, u.contributors)) {
+                        u.contributors.push(newUser); // Add new user as contributor of current user.
 
+                        if (nodeCount < MAX_NODES)
+                            noRepos.push(newUser); // Add to queue of users needing repo requests.
+                    }
+                }
 
+                getRepos(); // Process queue of users without repos.
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                 console.log(errorThrown);
+            }
+        });
+    }
+}
 
+function isNewContributor(username, contributors) {
+    for (var i = 0; i < contributors.length; i++)
+        if (username === contributors[i].username)
+            return false;
+    return true;
+}
 
-
-
-
-
-
-function getRepos(contributors, index) {
-    var u = contributors[index];
-
-    if (u == null) return;  // user has no contributors
-
-    // Get repos
-    // console.log("Getting repos for " + u.username + "...");
+function getUserRepos(u) {
     $.ajax({
         url: "https://api.github.com/users/" + u.username + "/repos",
         method: "GET",
         data: {
             "access_token": sessionStorage.getItem('token')
         },
-        success: function(data, textStatus, jqXHR) {
-            u.repos = data;
+        success: function(repos, textStatus, jqXHR) {
+            u.repos = repos;
 
-            if (index+1 < contributors.length)
-                getRepos(contributors, index+1);
-            else { // Finished getting repos for each contributor
-                // Get contributors of each contributor
-                for (var i = 0; i < contributors.length; i++)
-                    addContributorsFromRepo(contributors[i], 0);
+            if (nodeCount < MAX_NODES) {
+                noContributors.push(u);
+                getContributors(); // Process queue of users without contributors.
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
              console.log(errorThrown);
         }
     });
-
-}
-
-function addContributorsFromRepo(u, index) {
-    var repo = u.repos[index];
-
-    if (repo == null) return;   // user has no repos
-
-    // Get contributors for repo.
-    // console.log("Getting contributors for repository " + repo.name);
-    $.ajax({
-        url: repo.contributors_url,
-        method: "GET",
-        data: {
-            "access_token": sessionStorage.getItem('token')
-        },
-        success: function(data, textStatus, jqXHR) {
-            if (data != null) {
-                var contributors = data;
-
-                for (var i = 0; (i < contributors.length) && (nodeCount < maxNodes); i++) {
-                    if (u.username != contributors[i].login && isNewContributor(contributors[i].login, u.contributors)) {
-                        var newUser = {
-                            username: contributors[i].login,
-                            repos: null,
-                            contributors: []
-                        }
-
-                        u.contributors.push(newUser);
-                        nodeCount++;
-
-                        // If graph exists on page
-                        if ($('#graph').length != 0) {
-                            if (nodeCount % updateFreq == 0)
-                                showMyContributors();
-                        }
-                    }
-                }
-            }
-
-            if (nodeCount < maxNodes) {
-                if (index+1 < u.repos.length)
-                    addContributorsFromRepo(u, index+1); // Add contributors from next repo.
-                else // finished adding contributors for this user.
-                    getRepos(u.contributors, 0)
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-             console.log(errorThrown);
-        }
-    });
-
-}
-
-function isNewContributor(username, contributors) {
-    for (var i = 0; i < contributors.length; i++) {
-        if (username === contributors[i].username)
-            return false;
-    }
-    return true;
 }
